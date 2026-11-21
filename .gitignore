@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+.idea/
+.vscode/
+logs/
+reports/
+certs/
+captures/capture_*.pcapng
+_archive/
+.env

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield Relay - Cryptographic Communication &amp; Network Security Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="topbar">
+        <div class="brand">
+            <div class="logo">🛡️</div>
+            <div>
+                <h1>CyberShield Relay</h1>
+                <p>Cryptography &amp; Wireshark Network Security Analysis Security System</p>
+            </div>
+        </div>
+
+        <div class="topbar-actions">
+            <div class="session-status">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="sessionStatus">Initializing Security Engine...</span>
+            </div>
+            <button class="rekey-btn" onclick="generateNewSession()" title="Establish Fresh Ephemeral Diffie-Hellman Session">
+                🔄 Re-Key DH Session
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= NAVIGATION TABS ================= -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <button class="nav-tab active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">
+                🛡️ Security Dashboard
+            </button>
+            <button class="nav-tab" data-tab="tab-crypto" onclick="switchTab('tab-crypto')">
+                🔐 Cryptographic Communication
+            </button>
+            <button class="nav-tab" data-tab="tab-analyzer" onclick="switchTab('tab-analyzer')">
+                📡 Network Packet Analyzer
+            </button>
+            <button class="nav-tab" data-tab="tab-analytics" onclick="switchTab('tab-analytics')">
+                📊 Traffic Analytics
+            </button>
+            <button class="nav-tab" data-tab="tab-comparison" onclick="switchTab('tab-comparison')">
+                ⚖️ Plaintext vs Encrypted
+            </button>
+            <button class="nav-tab" data-tab="tab-attacks" onclick="switchTab('tab-attacks')">
+                ⚔️ Attack Simulations
+            </button>
+            <button class="nav-tab" data-tab="tab-monitor" onclick="switchTab('tab-monitor')">
+                🚨 Security Monitor
+            </button>
+            <button class="nav-tab" data-tab="tab-logs" onclick="switchTab('tab-logs')">
+                📋 Audit Logs &amp; Reports
+            </button>
+        </div>
+    </nav>
+
+
+    <!-- ================= MAIN CONTAINER ================= -->
+    <main class="container">
+
+        <!-- ============================================================ -->
+        <!-- TAB 1: SECURITY DASHBOARD (EXECUTIVE OVERVIEW) -->
+        <!-- ============================================================ -->
+        <section id="tab-dashboard" class="tab-content active">
+
+            <!-- HERO -->
+            <div class="hero">
+                <div>
+                    <p class="eyebrow">INTEGRATED COMPUTER &amp; NETWORK SECURITY PLATFORM</p>
+                    <h2>Cryptographic Integrity meets <span>Network Packet Analysis.</span></h2>
+                    <p class="hero-text">
+                        CyberShield Relay bridges application-layer encryption (Diffie&ndash;Hellman 2048-bit, HKDF-SHA256, AES-256-CBC,
+                        HMAC-SHA256, Ed25519) with real-world network packet inspection using Wireshark &amp; TShark.
+                    </p>
+                </div>
+            </div>
+
+            <!-- EXECUTIVE TELEMETRY CARDS -->
+            <div class="telemetry-grid">
+                <div class="telemetry-card">
+                    <span class="telemetry-icon">🔑</span>
+                    <div>
+                        <span class="telemetry-label">Diffie-Hellman Session</span>
+                        <strong class="telemetry-value text-green" id="dashDhStatus">RFC 3526 2048-bit Active</strong>
+                    </div>
+                </div>
+
+                <div class="telemetry-card">
+                    <span class="telemetry-icon">🧬</span>
+                    <div>
+                        <span class="telemetry-label">Handshake Signature</span>
+                        <strong class="telemetry-value text-green" id="dashEd25519Status">Ed25519 Verified</strong>
+                    </div>
+                </div>
+
+                <div class="telemetry-card">
+                    <span class="telemetry-icon">📡</span>
+                    <div>
+                        <span class="telemetry-label">Packet Capture Engine</span>
+                        <strong class="telemetry-value" id="dashCaptureStatus">TShark Ready</strong>
+                    </div>
+                </div>
+
+                <div class="telemetry-card">
+                    <span class="telemetry-icon">📦</span>
+                    <div>
+                        <span class="telemetry-label">Captured Packets</span>
+                        <strong class="telemetry-value text-cyan" id="dashPacketsCount">0</strong>
+                    </div>
+                </div>
+
+                <div class="telemetry-card">
+                    <span class="telemetry-icon">🚨</span>
+                    <div>
+                        <span class="telemetry-label">Security Alerts</span>
+                        <strong class="telemetry-value text-amber" id="dashAlertsCount">0</strong>
+                    </div>
+                </div>
+
+                <div class="telemetry-card">
+                    <span class="telemetry-icon">🌐</span>
+                    <div>
+                        <span class="telemetry-label">Operating Environment</span>
+                        <strong class="telemetry-value" id="dashNetMode">Localhost (127.0.0.1)</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS BAR -->
+            <div class="action-banner">
+                <div class="action-text">
+                    <strong>Quick Experiments &amp; Operations:</strong>
+                    <span>Jump directly to live experiments or capture packet streams.</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="switchTab('tab-crypto')">🔒 Send Incident</button>
+                    <button class="btn-secondary" onclick="switchTab('tab-analyzer')">📡 Packet Analyzer</button>
+                    <button class="btn-secondary" onclick="switchTab('tab-comparison')">⚖️ Plaintext vs Encrypted</button>
+                    <button class="btn-secondary" onclick="switchTab('tab-attacks')">⚔️ Attack Demos</button>
+                </div>
+            </div>
+
+            <!-- LAN CONFIGURATION CARD -->
+            <div class="lan-config-card">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">NETWORK DEPLOYMENT CONFIGURATION</p>
+                        <h3>Localhost &amp; LAN Dual-Mode Operation</h3>
+                    </div>
+                    <span class="badge-inspector" id="lanModeBadge">Mode: LOCALHOST</span>
+                </div>
+                <div class="lan-grid">
+                    <div>
+                        <span class="meta-label">Loopback Address</span>
+                        <code class="code-block">http://127.0.0.1:5000 (Insecure HTTP) | https://127.0.0.1:5443 (TLS)</code>
+                    </div>
+                    <div>
+                        <span class="meta-label">Discovered LAN IP Address</span>
+                        <code class="code-block" id="dashLanIp">Detecting...</code>
+                    </div>
+                </div>
+                <p class="lan-help-text" id="dashLanHelp">
+                    For two-computer demonstrations over Wi-Fi, run the receiver on Computer B and connect from Computer A using the LAN IP.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================ -->
+        <!-- TAB 2: CRYPTOGRAPHIC COMMUNICATION (OFFICER A & B) -->
+        <!-- ============================================================ -->
+        <section id="tab-crypto" class="tab-content">
+
+            <!-- CRYPTO SESSION STATE -->
+            <div class="crypto-session-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">ACTIVE CRYPTOGRAPHIC SESSION</p>
+                        <h3>Diffie&ndash;Hellman 2048-bit &amp; Ed25519 Handshake Signature</h3>
+                    </div>
+                    <button class="small-outline-btn" onclick="toggleCryptoDetails()">
+                        <span id="cryptoToggleText">Show Session Details ▾</span>
+                    </button>
+                </div>
+
+                <div class="crypto-meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Session ID</span>
+                        <span class="meta-value" id="dispSessionId">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">DH Group</span>
+                        <span class="meta-value">RFC 3526 MODP Group 14 (2048-bit, g=2)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Shared Secret</span>
+                        <span class="meta-value text-green" id="dispSharedSecretStatus">Derived &amp; Verified (256 bytes)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Handshake Authentication</span>
+                        <span class="meta-value text-green" id="dispHandshakeAuthStatus">Ed25519 Signature Verified</span>
+                    </div>
+                </div>
+
+                <div id="cryptoDetailsContent" class="crypto-details-box hidden">
+                    <div class="details-row">
+                        <div>
+                            <span class="meta-label">Officer A Public Key (A = g^a mod p)</span>
+                            <code id="dispOfficerAPub" class="code-block">-</code>
+                        </div>
+                        <div>
+                            <span class="meta-label">Officer B Public Key (B = g^b mod p)</span>
+                            <code id="dispOfficerBPub" class="code-block">-</code>
+                        </div>
+                    </div>
+
+                    <div class="details-row">
+                        <div>
+                            <span class="meta-label">Derived AES-256 Key (via HKDF-SHA256)</span>
+                            <div class="key-preview">
+                                <span class="badge-redacted">&lt;REDACTED SECRET KEY&gt;</span>
+                                <span class="fingerprint-label">SHA-256: <span id="dispAesFp">-</span></span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="meta-label">Derived HMAC-SHA256 Key (via HKDF-SHA256)</span>
+                            <div class="key-preview">
+                                <span class="badge-redacted">&lt;REDACTED SECRET KEY&gt;</span>
+                                <span class="fingerprint-label">SHA-256: <span id="dispHmacFp">-</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details-row">
+                        <div class="full-width">
+                            <span class="meta-label">Officer B Ed25519 Verifying Key &amp; Handshake Signature</span>
+                            <div class="key-preview">
+                                <span class="fingerprint-label">Server Key: <code id="dispEdVerifyingKey">-</code></span>
+                                <span class="fingerprint-label">Transcript Signature: <code id="dispEdSignature">-</code></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NETWORK TRANSMISSION MODE SELECTION -->
+            <div class="network-config-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">NETWORK TRANSMISSION CHANNEL</p>
+                        <h3>Select Transport Protocol</h3>
+                    </div>
+                    <span id="activeChannelBadge" class="channel-badge badge-https">🔒 HTTPS (TLS 1.3 Active)</span>
+                </div>
+
+                <div class="mode-selector">
+                    <label class="radio-card">
+                        <input type="radio" name="networkMode" value="HTTPS" checked onchange="onNetworkModeChange(this.value)">
+                        <div class="radio-content">
+                            <span class="radio-title">🔒 Secure Transmission &mdash; HTTPS (TLS 1.3)</span>
+                            <p class="radio-desc">
+                                Transmits over TLS port 5443. Client verifies local X.509 certificate explicitly.
+                                Encrypts transport headers, paths, and metadata.
+                            </p>
+                        </div>
+                    </label>
+
+                    <label class="radio-card">
+                        <input type="radio" name="networkMode" value="HTTP" onchange="onNetworkModeChange(this.value)">
+                        <div class="radio-content">
+                            <span class="radio-title">⚠️ Insecure Transmission &mdash; HTTP</span>
+                            <p class="radio-desc">
+                                Transmits over plaintext port 5000. While payload is AES-encrypted,
+                                HTTP headers and endpoints are visible to Wireshark sniffers.
+                            </p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- TWO PANEL COMMUNICATION (OFFICER A & B) -->
+            <div class="communication-section">
+                <!-- SENDER -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-label">OFFICER A (SENDER CLIENT)</p>
+                            <h3>Secure Incident Message</h3>
+                        </div>
+                        <span class="lock">🔒</span>
+                    </div>
+
+                    <label for="incidentId">Incident ID</label>
+                    <input type="text" id="incidentId" placeholder="Example: CC-1024" value="CC-1024">
+
+                    <label for="message">Incident Information</label>
+                    <textarea id="message" rows="4" placeholder="Enter sensitive incident details...">Unauthorized privilege escalation detected in core database cluster. Attacker accessed credential store.</textarea>
+
+                    <div class="transmit-meta-preview">
+                        <span>Target: <strong id="dispTargetEndpoint">https://127.0.0.1:5443/api/officer_b/receive</strong></span>
+                        <span>Transport: <strong id="dispTransportMode">HTTPS (TLS 1.3 Encrypted)</strong></span>
+                    </div>
+
+                    <button class="primary-button" id="btnEncryptSend" onclick="sendSecureMessage()">
+                        🔒 Encrypt &amp; Transmit over Network
+                    </button>
+
+                    <div id="sendResult" class="result-box hidden"></div>
+
+                    <!-- EVIDENCE -->
+                    <div id="cryptoEvidence" class="crypto-evidence hidden">
+                        <div class="evidence-title">🔐 Cryptographic Evidence (Officer A)</div>
+                        <div class="evidence-item">
+                            <span class="evidence-label">Nonce (Replay Defense)</span>
+                            <code id="evidenceNonce">-</code>
+                        </div>
+                        <div class="evidence-item">
+                            <span class="evidence-label">Timestamp (UTC)</span>
+                            <code id="evidenceTimestamp">-</code>
+                        </div>
+                        <div class="evidence-item">
+                            <span class="evidence-label">IV (16 bytes)</span>
+                            <code id="evidenceIv">-</code>
+                        </div>
+                        <div class="evidence-item">
+                            <span class="evidence-label">Ciphertext (AES-256-CBC)</span>
+                            <code id="ciphertextValue">-</code>
+                        </div>
+                        <div class="evidence-item">
+                            <span class="evidence-label">HMAC-SHA256 (Encrypt-then-MAC)</span>
+                            <code id="hmacValue">-</code>
+                        </div>
+                        <div class="key-redaction-notice">
+                            🛡️ <strong>Key Protection Policy:</strong> Raw private keys, derived AES-256 keys, and HMAC-SHA256 keys are held strictly in process memory and NEVER transmitted across the wire.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECEIVER -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-label">OFFICER B (RECEIVER SERVER)</p>
+                            <h3>Secure Inbox &amp; Verification</h3>
+                        </div>
+                        <span class="inbox-icon">📥</span>
+                    </div>
+
+                    <div class="inbox-status" id="inboxStatusBox">
+                        <span id="integrityIcon">🛡️</span>
+                        <div>
+                            <strong id="integrityTitle">Waiting for message</strong>
+                            <p id="integrityText">Transmit an encrypted incident message over the network to begin.</p>
+                        </div>
+                    </div>
+
+                    <div class="verification-pipeline">
+                        <div class="pipeline-title">🔍 Receiver Verification Pipeline:</div>
+                        <div class="pipeline-step" id="pipeTransport">
+                            <span class="pipe-icon">○</span>
+                            <span class="pipe-text">Transport Security: <strong id="pipeTransportText">Pending</strong></span>
+                        </div>
+                        <div class="pipeline-step" id="pipeFreshness">
+                            <span class="pipe-icon">○</span>
+                            <span class="pipe-text">Timestamp Freshness Window: <strong id="pipeFreshnessText">Pending (±300s)</strong></span>
+                        </div>
+                        <div class="pipeline-step" id="pipeReplay">
+                            <span class="pipe-icon">○</span>
+                            <span class="pipe-text">Replay Protection: <strong id="pipeReplayText">Pending Nonce Check</strong></span>
+                        </div>
+                        <div class="pipeline-step" id="pipeHmac">
+                            <span class="pipe-icon">○</span>
+                            <span class="pipe-text">HMAC-SHA256 Integrity: <strong id="pipeHmacText">Pending Verification</strong></span>
+                        </div>
+                        <div class="pipeline-step" id="pipeDecrypt">
+                            <span class="pipe-icon">○</span>
+                            <span class="pipe-text">AES-256 Decryption: <strong id="pipeDecryptText">Pending Unpadding</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="received-message">
+                        <label>Decrypted Incident Report (Officer B View)</label>
+                        <div id="receivedMessage" class="message-display">No message received yet.</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================ -->
+        <!-- TAB 3: NETWORK PACKET ANALYZER (WIRESHARK & TSHARK) -->
+        <!-- ============================================================ -->
+        <section id="tab-analyzer" class="tab-content">
+
+            <!-- TSHARK TOOLBAR & CONTROLS -->
+            <div class="analyzer-control-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">LIVE NETWORK PACKET CAPTURE</p>
+                        <h3>Wireshark &amp; TShark Capture Engine</h3>
+                    </div>
+                    <span id="tsharkStatusBadge" class="badge-inspector">TShark Checking...</span>
+                </div>
+
+                <div class="capture-controls-grid">
+                    <div>
+                        <label for="captureInterfaceSelect">Capture Interface:</label>
+                        <select id="captureInterfaceSelect" class="form-select">
+                            <option value="">Detecting interfaces...</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="captureFilterInput">Capture Filter (BPF):</label>
+                        <input type="text" id="captureFilterInput" value="tcp port 5000 or tcp port 5443" class="form-input">
+                    </div>
+
+                    <div class="capture-btn-group">
+                        <button class="btn-primary" id="btnStartCapture" onclick="startPacketCapture()">
+                            ▶ Start Capture
+                        </button>
+                        <button class="btn-secondary" id="btnStopCapture" onclick="stopPacketCapture()" disabled>
+                            ⏹ Stop Capture
+                        </button>
+                        <button class="btn-secondary" onclick="loadCapturedPackets()">
+                            🔄 Refresh Packets
+                        </button>
+                    </div>
+                </div>
+
+                <div class="capture-export-bar">
+                    <span id="captureStatusText">Capture inactive. Ready to capture live application traffic.</span>
+                    <div class="export-actions">
+                        <button class="small-outline-btn" onclick="downloadCurrentPcap()">
+                            💾 Download PCAP (for Wireshark)
+                        </button>
+                        <button class="small-outline-btn" onclick="exportPacketsCsv()">
+                            📊 Export to CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PACKET STREAM TABLE -->
+            <div class="packet-table-container">
+                <div class="table-header-bar">
+                    <h4>📡 Captured Network Packets (<span id="parsedPacketsCount">0</span> loaded)</h4>
+                    <input type="text" id="packetSearchInput" placeholder="Filter by IP, Protocol, or Keyword..." onkeyup="filterPacketTable()" class="table-search">
+                </div>
+
+                <div class="table-scroll">
+                    <table class="packet-table" id="packetDataTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Time</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Protocol</th>
+                                <th>Length</th>
+                                <th>TCP Flags</th>
+                                <th>Stream</th>
+                                <th>Payload Preview</th>
+                            </tr>
+                        </thead>
+                        <tbody id="packetTableBody">
+                            <tr>
+                                <td colspan="9" class="text-center">No captured packets loaded. Click 'Refresh Packets' or start live capture.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PACKET DEEP INSPECTOR & HEX/ASCII DUMP -->
+            <div id="packetDetailView" class="packet-detail-panel hidden">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">DEEP PACKET INSPECTION</p>
+                        <h3>Packet #<span id="detailPktNum">-</span> Details &amp; Payload Hex Dump</h3>
+                    </div>
+                    <button class="small-outline-btn" onclick="closePacketDetail()">Close Inspector &times;</button>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-col">
+                        <div class="sub-title">Header Fields</div>
+                        <div class="kv-row"><span>Protocol:</span> <strong id="detailProto">-</strong></div>
+                        <div class="kv-row"><span>Source:</span> <span id="detailSrc">-</span></div>
+                        <div class="kv-row"><span>Destination:</span> <span id="detailDst">-</span></div>
+                        <div class="kv-row"><span>Packet Length:</span> <span id="detailLen">-</span></div>
+                        <div class="kv-row"><span>TCP Flags:</span> <code id="detailFlags">-</code></div>
+                        <div class="kv-row"><span>TCP Sequence:</span> <span id="detailSeq">-</span></div>
+                        <div class="kv-row"><span>TCP Ack:</span> <span id="detailAck">-</span></div>
+                        <div class="kv-row"><span>TCP Stream ID:</span> <span id="detailStream">-</span></div>
+                        <div class="kv-row"><span>HTTP Endpoint:</span> <span id="detailHttp">-</span></div>
+                    </div>
+
+                    <div class="detail-col">
+                        <div class="sub-title">Wireshark Hex &amp; ASCII Dump</div>
+                        <pre id="detailHexDump" class="hex-dump-block">Select a packet to view raw byte contents.</pre>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================ -->
+        <!-- TAB 4: NETWORK TRAFFIC ANALYTICS -->
+        <!-- ============================================================ -->
+        <section id="tab-analytics" class="tab-content">
+
+            <div class="section-title">
+                <p class="panel-label">TRAFFIC TELEMETRY &amp; STATISTICS</p>
+                <h3>Network Communication Analytics</h3>
+            </div>
+
+            <div class="analytics-metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Total Transferred</span>
+                    <strong class="metric-value text-cyan" id="metricTotalBytes">0 KB</strong>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Average Packet Size</span>
+                    <strong class="metric-value" id="metricAvgSize">0 B</strong>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Max Packet Size</span>
+                    <strong class="metric-value" id="metricMaxSize">0 B</strong>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Active TCP Streams</span>
+                    <strong class="metric-value text-green" id="metricActiveStreams">0</strong>
+                </div>
+            </div>
+
+            <div class="analytics-charts-grid">
+                <!-- PROTOCOL DISTRIBUTION -->
+                <div class="chart-card">
+                    <h4>📊 Protocol Distribution</h4>
+                    <div id="protocolDistBars" class="dist-bars-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- PACKET SIZE DISTRIBUTION -->
+                <div class="chart-card">
+                    <h4>📦 Packet Size Distribution</h4>
+                    <div id="sizeDistBars" class="dist-bars-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TCP STREAMS TABLE -->
+            <div class="streams-panel">
+                <h4>🔄 Reconstructed TCP Streams</h4>
+                <div class="table-scroll">
+                    <table class="packet-table" id="streamsTable">
+                        <thead>
+                            <tr>
+                                <th>Stream ID</th>
+                                <th>Client Endpoint</th>
+                                <th>Server Endpoint</th>
+                                <th>Packets</th>
+                                <th>Client &rarr; Server</th>
+                                <th>Server &rarr; Client</th>
+                                <th>Bytes</th>
+                                <th>Protocol</th>
+                            </tr>
+                        </thead>
+                        <tbody id="streamsTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center">No active streams analyzed.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================ -->
+        <!-- TAB 5: PLAINTEXT VS ENCRYPTED EXPERIMENT -->
+        <!-- ============================================================ -->
+        <section id="tab-comparison" class="tab-content">
+
+            <div class="section-title">
+                <p class="panel-label">CRYPTOGRAPHIC DEFENSE EXPERIMENT</p>
+                <h3>Plaintext vs. Encrypted Network Analysis</h3>
+                <p class="section-desc">
+                    Controlled comparison demonstrating how cryptography shields application messages while transport metadata remains observable.
+                </p>
+            </div>
+
+            <div class="experiment-runner-bar">
+                <input type="text" id="expMessageInput" value="CRITICAL: Threat actor exfiltrating credential hash database." class="form-input">
+                <button class="btn-primary" onclick="runEavesdroppingExperiment()">
+                    ⚖️ Execute Side-by-Side Analysis
+                </button>
+            </div>
+
+            <div class="comparison-grid" id="comparisonResultGrid">
+                <!-- EXPERIMENT A: PLAINTEXT -->
+                <div class="comparison-card card-insecure">
+                    <div class="card-tag tag-alert">EXPERIMENT A &mdash; INSECURE PLAINTEXT</div>
+                    <h4>⚠️ Plaintext Wire Transmission</h4>
+                    <div class="comp-item">
+                        <span class="comp-label">Wiretap Readability:</span>
+                        <strong class="text-red">Fully Readable (Plaintext on Wire)</strong>
+                    </div>
+                    <div class="comp-item">
+                        <span class="comp-label">Captured Wire Payload:</span>
+                        <pre class="code-block text-amber" id="expPlaintextPayload">{"incident_id": "CC-DEMO", "message": "CRITICAL: Threat actor exfiltrating credential hash database."}</pre>
+                    </div>
+                    <div class="comp-item">
+                        <span class="comp-label">Confidentiality:</span>
+                        <span>NONE &mdash; Any Wireshark sniffer intercepts the message in cleartext.</span>
+                    </div>
+                    <div class="comp-item">
+                        <span class="comp-label">Integrity Verification:</span>
+                        <span>NONE &mdash; Messages can be altered in transit without detection.</span>
+                    </div>
+                </div>
+
+                <!-- EXPERIMENT B: ENCRYPTED -->
+                <div class="comparison-card card-secure">
+                    <div class="card-tag tag-secure">EXPERIMENT B &mdash; CRYPTOGRAPHICALLY SECURE</div>
+                    <h4>🔒 Encrypted Wire Transmission</h4>
+                    <div class="comp-item">
+                        <span class="comp-label">Wiretap Readability:</span>
+                        <strong class="text-green">Opaque Ciphertext (Unreadable)</strong>
+                    </div>
+                    <div class="comp-item">
+                        <span class="comp-label">Captured Wire Payload:</span>
+                        <pre class="code-block text-green" id="expEncryptedPayload">Ciphertext: u7Fd92L... | HMAC: 9Z1xP4mQ7v...</pre>
+                    </div>
+                    <div class="comp-item">
+                        <span class="comp-label">Confidentiality:</span>
+                        <span>HIGH &mdash; AES-256-CBC encrypted with 256-bit derived key.</span>
+                    </div>
+                    <div class="comp-item">
+                        <span class="comp-label">Integrity Verification:</span>
+                        <span>HIGH &mdash; HMAC-SHA256 Encrypt-then-MAC prevents tampering.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPARISON TELEMETRY TABLE -->
+            <div class="metrics-table-panel">
+                <h4>📈 Quantitative Comparison Metrics</h4>
+                <table class="packet-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Plaintext Mode</th>
+                            <th>Encrypted Mode</th>
+                            <th>Security Impact Analysis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Payload Confidentiality</td>
+                            <td class="text-red">Readable by Attacker</td>
+                            <td class="text-green">Encrypted (AES-256)</td>
+                            <td>Guarantees privacy against wiretappers</td>
+                        </tr>
+                        <tr>
+                            <td>Payload Integrity</td>
+                            <td class="text-red">No Authentication</td>
+                            <td class="text-green">HMAC-SHA256 (Constant-time)</td>
+                            <td>Guarantees data authenticity &amp; detects modification</td>
+                        </tr>
+                        <tr>
+                            <td>Payload Wire Size</td>
+                            <td id="compPlainBytes">114 Bytes</td>
+                            <td id="compEncBytes">306 Bytes</td>
+                            <td>Cryptographic metadata expansion: +192 Bytes</td>
+                        </tr>
+                        <tr>
+                            <td>Wiretap Exposure</td>
+                            <td class="text-red">Headers &amp; Message Exposed</td>
+                            <td class="text-green">Headers &amp; Message Shielded in TLS</td>
+                            <td>HTTPS conceals all transport headers and paths</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================ -->
+        <!-- TAB 6: ATTACK SIMULATIONS -->
+        <!-- ============================================================ -->
+        <section id="tab-attacks" class="tab-content">
+
+            <div class="section-title">
+                <p class="panel-label">SECURITY ANALYSIS &amp; ATTACK HUB</p>
+                <h3>Controlled Network Security Demonstrations</h3>
+                <p class="section-desc">
+                    Execute safe, deterministic simulations demonstrating eavesdropping, MITM attacks, Ed25519 handshake defense, ciphertext tampering, and replay protection.
+                </p>
+            </div>
+
+            <div class="attack-cards-grid">
+                <!-- ATTACK 1: EAVESDROPPING -->
+                <div class="attack-card">
+                    <div class="attack-card-header">
+                        <span class="attack-badge">ATTACK 1</span>
+                        <h4>👁️ Wire Eavesdropping</h4>
+                    </div>
+                    <p class="attack-desc">
+                        Observe cleartext metadata exposure on insecure HTTP vs total confidentiality on HTTPS.
+                    </p>
+                    <button class="attack-btn" onclick="simulateEavesdropping()">
+                        Simulate Eavesdropping
+                    </button>
+                </div>
+
+                <!-- ATTACK 2: MITM & ED25519 AUTH -->
+                <div class="attack-card">
+                    <div class="attack-card-header">
+                        <span class="attack-badge">ATTACK 2</span>
+                        <h4>🕵️ MITM &amp; Ed25519 Auth</h4>
+                    </div>
+                    <p class="attack-desc">
+                        Demonstrate unauthenticated DH key-substitution vulnerability and Ed25519 digital signature defense.
+                    </p>
+                    <button class="attack-btn" onclick="simulateMitm()">
+                        Simulate MITM Defense
+                    </button>
+                </div>
+
+                <!-- ATTACK 3: TAMPERING -->
+                <div class="attack-card">
+                    <div class="attack-card-header">
+                        <span class="attack-badge">ATTACK 3</span>
+                        <h4>⚠️ Message Tampering</h4>
+                    </div>
+                    <p class="attack-desc">
+                        Mutate a ciphertext byte. Show HMAC-SHA256 check failing and receiver dropping the payload before decryption.
+                    </p>
+                    <button class="attack-btn" onclick="simulateTampering()">
+                        Simulate Tampering
+                    </button>
+                </div>
+
+                <!-- ATTACK 4: REPLAY -->
+                <div class="attack-card">
+                    <div class="attack-card-header">
+                        <span class="attack-badge">ATTACK 4</span>
+                        <h4>🔁 Replay Attack</h4>
+                    </div>
+                    <p class="attack-desc">
+                        Resend a previously accepted valid packet. Demonstrate receiver rejection via cached nonce tracking.
+                    </p>
+                    <button class="attack-btn" onclick="simulateReplay()">
+                        Simulate Replay Attack
+                    </button>
+                </div>
+            </div>
+
+            <!-- SIMULATION TERMINAL RESULTS -->
+            <div id="simulationResultBox" class="sim-result-box hidden">
+                <div class="sim-header">
+                    <span id="simResultBadge" class="sim-badge">STATUS</span>
+                    <strong id="simResultTitle">Simulation Result</strong>
+                </div>
+                <div id="simResultContent" class="sim-content"></div>
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================ -->
+        <!-- TAB 7: SECURITY MONITOR & BENCHMARK -->
+        <!-- ============================================================ -->
+        <section id="tab-monitor" class="tab-content">
+
+            <div class="section-title">
+                <p class="panel-label">RULE-BASED INTRUSION DETECTION</p>
+                <h3>Network Security Monitor &amp; Performance Benchmarks</h3>
+            </div>
+
+            <!-- RULE ALERTS -->
+            <div class="monitor-alerts-panel">
+                <div class="panel-header">
+                    <h4>🚨 Rule-Based Security Alerts (<span id="activeAlertsCount">0</span> detected)</h4>
+                    <button class="small-outline-btn" onclick="loadSecurityAlerts()">Refresh Alerts</button>
+                </div>
+
+                <div id="alertsContainer" class="alerts-feed">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- CRYPTO LATENCY BENCHMARK -->
+            <div class="benchmark-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">PERFORMANCE BENCHMARK</p>
+                        <h4>⚡ Cryptographic Primitive Latency Execution</h4>
+                    </div>
+                    <button class="btn-primary" onclick="runCryptoBenchmark()">Run Benchmark</button>
+                </div>
+
+                <div class="benchmark-grid" id="benchmarkGrid">
+                    <div class="bench-item"><span>DH 2048-bit Keygen:</span> <strong id="benchDhKeygen">-</strong></div>
+                    <div class="bench-item"><span>DH Shared Secret:</span> <strong id="benchDhSecret">-</strong></div>
+                    <div class="bench-item"><span>Ed25519 Sign:</span> <strong id="benchEdSign">-</strong></div>
+                    <div class="bench-item"><span>Ed25519 Verify:</span> <strong id="benchEdVerify">-</strong></div>
+                    <div class="bench-item"><span>HKDF Key Derivation:</span> <strong id="benchHkdf">-</strong></div>
+                    <div class="bench-item"><span>AES-256-CBC Encrypt:</span> <strong id="benchAesEnc">-</strong></div>
+                    <div class="bench-item"><span>HMAC-SHA256 Generate:</span> <strong id="benchHmacGen">-</strong></div>
+                    <div class="bench-item"><span>HMAC-SHA256 Verify:</span> <strong id="benchHmacVerify">-</strong></div>
+                    <div class="bench-item"><span>AES-256-CBC Decrypt:</span> <strong id="benchAesDec">-</strong></div>
+                    <div class="bench-item bench-total"><span>Total Pipeline Latency:</span> <strong class="text-cyan" id="benchTotal">-</strong></div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ============================================================ -->
+        <!-- TAB 8: AUDIT LOGS & REPORTS -->
+        <!-- ============================================================ -->
+        <section id="tab-logs" class="tab-content">
+
+            <div class="log-header">
+                <div>
+                    <p class="panel-label">FORENSIC AUDIT TRAIL &amp; EXPORTS</p>
+                    <h3>📋 Security Event Log &amp; Report Generator</h3>
+                </div>
+                <div class="log-btn-group">
+                    <button class="small-outline-btn" onclick="downloadComprehensiveReport()">
+                        📥 Download Full Audit Report (.json)
+                    </button>
+                    <button class="small-outline-btn" onclick="exportPacketsCsv()">
+                        📊 Export Packets to CSV
+                    </button>
+                    <button class="small-outline-btn" onclick="clearSecurityLog()">
+                        Clear Log
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOG FILTER BUTTONS -->
+            <div class="log-filter-bar">
+                <button class="filter-chip active" onclick="filterLogs('ALL')">ALL</button>
+                <button class="filter-chip" onclick="filterLogs('CRYPTO')">CRYPTO</button>
+                <button class="filter-chip" onclick="filterLogs('NETWORK')">NETWORK</button>
+                <button class="filter-chip" onclick="filterLogs('ATTACK')">ATTACK</button>
+                <button class="filter-chip" onclick="filterLogs('RECEIVER')">RECEIVER</button>
+            </div>
+
+            <div id="eventLog" class="event-log-container">
+                <!-- Log entries inserted dynamically -->
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+        <div>
+            <p><strong>CyberShield Relay</strong> &middot; Cryptography and Network Security System</p>
+            <p class="footer-sub">
+                Diffie&ndash;Hellman 2048-bit (RFC 3526) &bull; HKDF-SHA256 &bull; AES-256-CBC &bull; HMAC-SHA256 &bull; Ed25519 Auth &bull; Wireshark/TShark Integration
+            </p>
+        </div>
+        <div>
+            <p>Engine Status: <span class="text-green">All Cryptographic &amp; Network Modules Active</span></p>
+        </div>
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
