@@ -73,12 +73,12 @@ docs/images/           architecture diagram and screenshots
 |---|---|
 | Backend | Python 3, Flask, Werkzeug threaded servers, `requests`, `psutil` |
 | Cryptography | `cryptography` library (DH, Ed25519, HKDF, AES, HMAC, X.509) |
-| Network analysis | Wireshark / TShark, Npcap (Windows loopback), PCAP/PCAPNG |
+| Network analysis | Wireshark / TShark (Npcap loopback on Windows, `lo` on Linux), PCAP/PCAPNG |
 | Frontend | HTML, CSS, vanilla JavaScript |
 | Testing | pytest, end-to-end script |
 
 ## Getting started
-**Prerequisites:** Python 3.10+ (developed on 3.13). Packet capture additionally needs **Wireshark with TShark** (set `TSHARK_PATH` if it is not on the default path) and, on Windows, **Npcap** with loopback support. Everything except capture works without them.
+**Prerequisites:** Python 3.10+ (developed on 3.13, also run on 3.14). Packet capture additionally needs **Wireshark with TShark** (set `TSHARK_PATH` if it is not on the default path) and, on Windows, **Npcap** with loopback support. Everything except capture works without them.
 
 ```bash
 git clone git@github.com:HarshaNaik8/Cybershield-Relay.git
@@ -93,8 +93,15 @@ Open <https://127.0.0.1:5443> and accept the browser warning for the self-signed
 **Packet capture on Ubuntu/Debian:**
 ```bash
 sudo apt install tshark                 # answer "Yes" to non-superuser capture
-sudo usermod -aG wireshark $USER        # then log out and log in again
+sudo usermod -aG wireshark $USER        # then restart the computer
 ```
+
+On Ubuntu 26.04, AppArmor confines TShark. If the packet table stays empty ("permission to read the file") or **Stop Capture** leaves TShark running, put these lines in `/etc/apparmor.d/local/tshark`, using the real path of your copy:
+```
+/path/to/Cybershield-Relay/captures/*.{pcap,pcapng} r,
+signal (receive) set=(term, kill) peer=snap.code.code,
+```
+then reload with `sudo apparmor_parser --replace /etc/apparmor.d/tshark`. The first line lets TShark read capture files in that folder only; the second is needed only when the app is started from the VS Code snap. Delete the file and reload to undo.
 
 ## Using the dashboard
 | Tab | Purpose |
@@ -130,7 +137,8 @@ Stop `app.py` first; the tests use ports 5000 and 5443. Tests that need TShark o
 | Environment | pytest | `test_suite.py` |
 |---|---|---|
 | Windows 11, TShark + Npcap | 62 passed | 8 passed |
-| Ubuntu Linux, without TShark | 56 passed, 6 skipped | 8 passed |
+| Ubuntu 26.04, TShark 4.6.4 | 62 passed | 8 passed |
+| Any system without TShark | 56 passed, 6 skipped | 8 passed |
 
 | Group | Covers |
 |---|---|
