@@ -88,7 +88,13 @@ source venv/bin/activate          # Windows: .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python app.py
 ```
-Open <http://127.0.0.1:5000> (HTTPS: <https://127.0.0.1:5443>). Certificates are generated into `certs/` on first start. Stop with `Ctrl+C`.
+Open <https://127.0.0.1:5443> and accept the browser warning for the self-signed certificate (plain HTTP is also available at <http://127.0.0.1:5000>). Over HTTPS, the text you type is not sent in clear form between the browser and the app. Certificates are generated into `certs/` on first start. Stop with `Ctrl+C`.
+
+**Packet capture on Ubuntu/Debian:**
+```bash
+sudo apt install tshark                 # answer "Yes" to non-superuser capture
+sudo usermod -aG wireshark $USER        # then log out and log in again
+```
 
 ## Using the dashboard
 | Tab | Purpose |
@@ -121,6 +127,11 @@ python test_suite.py          # 8 end-to-end scenarios (starts its own servers)
 ```
 Stop `app.py` first; the tests use ports 5000 and 5443. Tests that need TShark or loopback capture skip themselves when it is unavailable.
 
+| Environment | pytest | `test_suite.py` |
+|---|---|---|
+| Windows 11, TShark + Npcap | 62 passed | 8 passed |
+| Ubuntu Linux, without TShark | 56 passed, 6 skipped | 8 passed |
+
 | Group | Covers |
 |---|---|
 | `test_crypto.py` | DH, HKDF, AES, HMAC, Ed25519, receiver ordering |
@@ -147,6 +158,9 @@ The default is localhost. Set `CYBERSHIELD_MODE=LAN` before `python app.py` to b
 - HMAC gives no non-repudiation; the informational `protocol` field is not authenticated.
 - The legacy `/api/receive` endpoint returns the decrypted message to its caller.
 - Flask development server, unauthenticated endpoints, in-memory audit log.
+- The browser-to-app request of the dashboard is outside the protected A-to-B packet: over plain HTTP it carries the typed text, and its reply carries the decrypted text for display.
+- The **Plaintext vs Encrypted** panel is an illustration built by the application; real wire evidence comes from packet capture.
+- The dashboard's "Operating Environment" card shows `(undefined)` instead of the bind address (display issue only).
 - Finite-field DH is deprecated in the `cryptography` library.
 
 **Possible future work:** X25519 ECDH, AES-GCM, mutual TLS, a persistent nonce store, a two-machine test with a trusted certificate authority.

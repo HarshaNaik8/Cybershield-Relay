@@ -11,3 +11,6 @@ certs/
 captures/capture_*.pcapng
 _archive/
 .env
+deliverables/
+learnings/
+.netlify/
